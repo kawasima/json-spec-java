@@ -6,7 +6,12 @@
 
     <groupId>net.unit8.jsonspec</groupId>
     <artifactId>json-spec-java</artifactId>
+    <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
+    <modules>
+        <module>json-spec-junit5</module>
+        <module>json-spec-engine</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -56,9 +61,12 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.22.1</version>
+                        <version>3.0.0-M5</version>
                         <configuration>
-                            <argLine>-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI --module-path=${compiler.dir} --upgrade-module-path=${compiler.dir}/compiler.jar;${compiler.dir}/compiler-management.jar</argLine>
+                            <forkCount>0</forkCount>
+                            <useSystemClassLoader>false</useSystemClassLoader>
+                            <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI --module-path=${compiler.dir} --upgrade-module-path=${compiler.dir}/compiler.jar;${compiler.dir}/compiler-management.jar</argLine>
+                            <encoding>UTF-8</encoding>
                         </configuration>
                     </plugin>
                     <plugin>
