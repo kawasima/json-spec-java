@@ -7,7 +7,12 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +25,7 @@ import java.util.stream.Stream;
  * @author kawasima
  */
 public class SpecProvider implements ArgumentsProvider, AnnotationConsumer<SpecSource> {
+    private static final String CLASSPATH_URL_PREFIX = "classpath:";
     private int sample;
     private String[] specName;
     private final SpecEngine specEngine;
@@ -56,10 +62,28 @@ public class SpecProvider implements ArgumentsProvider, AnnotationConsumer<SpecS
      */
     @Override
     public void accept(SpecSource specSource) {
-        Stream.of(specSource.file())
+        Stream.of(specSource.uri())
+                .map(this::getURI)
                 .map(File::new)
                 .forEach(specEngine::load);
         specName = specSource.spec();
         sample = specSource.sample();
+    }
+
+    private URI getURI(String resourceLocation) {
+        if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
+            String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try {
+                URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
+                if (url == null) {
+                    throw new FileNotFoundException(path + " cannot be resolved to absolute file path because it does not exist");
+                }
+                return url.toURI();
+            } catch (URISyntaxException | FileNotFoundException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+        return URI.create(resourceLocation);
     }
 }

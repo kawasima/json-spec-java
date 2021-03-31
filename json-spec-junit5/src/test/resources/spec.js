@@ -20,7 +20,7 @@ const person = s.object({
   }
 });
 
-const fullName = sp.name({ size: 4});
+const fullName = sp.name({ size: 21});
 
 module.exports = {
   person,

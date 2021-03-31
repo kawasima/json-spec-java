@@ -17,9 +17,11 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 class SpecEngineImpl implements SpecEngine {
+    private static final Logger LOG = Logger.getLogger(SpecEngineImpl.class.getName());
     private final Context ctx;
     private final ObjectMapper mapper = new ObjectMapper()
             .registerModule(new JavaTimeModule());
@@ -44,17 +46,20 @@ class SpecEngineImpl implements SpecEngine {
                 .allowListAccess(true)
                 .allowPublicAccess(true)
                 .build();
-
+        LOG.finer("Start to build a context");
         ctx = Context.newBuilder("js")
                 .allowExperimentalOptions(true)
                 .allowIO(true)
                 .options(options)
                 .allowHostAccess(access)
                 .build();
+        LOG.finer("End a build context");
+        LOG.finer("Start an initialization specifications");
         ctx.eval("js", "const specs = {}; const s = require('@json-spec/core');" +
                 "const gen = require('@json-spec/core/gen');" +
                 "const isValid = function(specName, val) { return s.isValid(specs[specName], val) };" +
                 "const explain = function(specName, val) { return s.explainData(specs[specName], val) };");
+        LOG.finer("End an initialization");
     }
 
     public static SpecEngineImpl getInstance() {
@@ -82,7 +87,7 @@ class SpecEngineImpl implements SpecEngine {
 
     private <T> Value toJsValue(T value) {
         Value jsValue = ctx.asValue(value);
-        if (!jsValue.isHostObject()) {
+        if (!jsValue.isHostObject() || jsValue.isNull()) {
             return jsValue;
         } else if (value.getClass().isArray()) {
             return ctx.asValue(ProxyArray.fromArray(value));

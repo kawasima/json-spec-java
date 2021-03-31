@@ -1,5 +1,4 @@
 const s = require('@json-spec/core');
-const gen = require('@json-spec/core/gen');
 const sp = require('@json-spec/spec-profiles');
 const sb = require('@json-spec/spec-basic');
 

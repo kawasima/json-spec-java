@@ -3,6 +3,7 @@ package net.unit8.jsonspec.junit5;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.lang.annotation.*;
+import java.net.URI;
 
 /**
  * Declare a specification source.
@@ -18,7 +19,7 @@ public @interface SpecSource {
     /**
      * The file path of the specification.
      */
-    String[] file();
+    String[] uri();
 
     /**
      * The name of the specification.
