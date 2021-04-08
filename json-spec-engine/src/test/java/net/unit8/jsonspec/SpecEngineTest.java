@@ -1,5 +1,6 @@
 package net.unit8.jsonspec;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpecEngineTest {
     static {
@@ -37,7 +40,8 @@ public class SpecEngineTest {
             specEngine.load(new File(baseDir, "spec.js"));
             Logger.getLogger("").finer("End loading a spec file");
             Person person = new Person("Yoshitaka", "Kawashima", List.of("Clojure"), new Date(1974, Calendar.OCTOBER, 16), "1111111");
-            System.out.println(specEngine.explain("person", person));
+            assertThat(specEngine.isValid("person", person)).isFalse();
+            assertThat(specEngine.explain("person",person)).isPresent();
         }
     }
 

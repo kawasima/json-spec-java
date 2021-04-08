@@ -36,6 +36,7 @@ class SpecEngineImpl implements SpecEngine {
         Map<String, String> options = new HashMap<>();
         options.put("js.commonjs-require", "true");
         options.put("js.commonjs-require-cwd", Paths.get(cwd).toAbsolutePath().toString());
+        options.put("js.foreign-object-prototype", "true");
 
         HostAccess.Builder builder = HostAccess.newBuilder();
         builder.targetTypeMapping(Value.class, Object.class, Value::hasArrayElements, (v) -> v.as(List.class))
